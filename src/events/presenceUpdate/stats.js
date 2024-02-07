@@ -1,5 +1,12 @@
+const { Colors } = require('discord.js')
+const { EmbedBuilder } = require('discord.js')
+const { ClientApplication } = require('discord.js')
+
 const dotenv = require('dotenv').config()
 
+/**
+ * @param {import('discord.js').Client} client 
+ */
 module.exports = function (oldState, newState, client) {
     const member = client.guilds.cache
         .get(process.env.GUILD_ID).members.cache
@@ -8,4 +15,14 @@ module.exports = function (oldState, newState, client) {
     client.channels.cache
         .get(process.env.MEMBER_STATS_CHANNEL_ID)
         .setName(`Members: ${member}`)
+
+    if (new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase() == 'sabtu'){
+        const embed = new EmbedBuilder({
+            title: 'Info Maintenance',
+            color: 0xff0000,
+            description: 'Hari ini akan ada maintenance silahkan keluar voice channel agar exp mu tersave'
+        });
+
+        client.channels.cache.get('1204593050396008468').send({embeds: [embed]});
+    }
 }
