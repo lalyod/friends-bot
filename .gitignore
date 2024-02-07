@@ -2,3 +2,6 @@ node_modules/
 .env
 dist
 build.js
+friends-bot.zip
+discloud.config
+.replit
