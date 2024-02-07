@@ -9,11 +9,9 @@ module.exports = {
             option.setName('reason')
                 .setDescription('Alasan afk karena apa?')
         ),
-
     /**
      * @param {InteractionResponse} interaction
      */
-
     run: async ({ interaction }) => {
         if (!interaction.inGuild()) return
 

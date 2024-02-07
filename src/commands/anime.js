@@ -57,5 +57,7 @@ module.exports = {
         const row = new ActionRowBuilder({ components: [select] })
 
         interaction.reply({ components: [row] })
+
+      delete dayFormat, animes, select, row, interaction, index;
     }
 }
