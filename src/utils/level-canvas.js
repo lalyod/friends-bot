@@ -59,7 +59,7 @@ module.exports = async (level, rank, member) => {
     avatar.src = Buffer.from(await body.arrayBuffer());
     ctx.drawImage(avatar, 38, 20, 160, 160);
 
-    const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'profile-image.png' });
+    const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'leave-img.png' });
 
     return attachment
 }

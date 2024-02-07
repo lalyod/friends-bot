@@ -50,11 +50,11 @@ module.exports = async (member, client) => {
         const { body } = await request(member.displayAvatarURL({ extension: 'jpg' }));
         const avatar = new Image();
         avatar.src = Buffer.from(await body.arrayBuffer());
-        ctx.drawImage(avatar, canvas.width / 2.85, canvas.height / 13.5, 300, 300);
+        ctx.drawImage(avatar, canvas.width / 2.675, canvas.height / 13.5, 260, 260);
 
         const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'profile-image.png' });
 
-        client.channels.cache.get(process.env.GUILD_ID).send({ files: [attachment] })
+        return attachment;
     }catch(err){
         console.log(err);
     }
