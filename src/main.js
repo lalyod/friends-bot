@@ -26,9 +26,8 @@ async function connect() {
             commandsPath: path.join(__dirname, 'commands'),
             eventsPath: path.join(__dirname, 'events'),
             validationsPath: path.join(__dirname, 'validations'),
-        })
-
-        client.login(process.env.TOKEN)
+        });
+        client.login(process.env.TOKEN);
     } catch (error) {
         console.log(error);
     }
