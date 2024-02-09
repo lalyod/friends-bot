@@ -16,13 +16,21 @@ module.exports = function (oldState, newState, client) {
         .get(process.env.MEMBER_STATS_CHANNEL_ID)
         .setName(`Members: ${member}`)
 
-    if (new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase() == 'sabtu'){
-        const embed = new EmbedBuilder({
-            title: 'Info Maintenance',
-            color: 0xff0000,
-            description: 'Hari ini akan ada maintenance silahkan keluar voice channel agar exp mu tersave'
+    if (new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase() == 'sabtu') {
+        client.channels.fetch('1204593050396008468').then(async channel => {
+            const messages = await channel.messages.fetch({ limit: 1 })
+            messages.forEach(message => {
+                if (new Date(message.createdTimestamp).getDate() != new Date().getDate()){
+                    const embed = new EmbedBuilder({
+                        title: 'Info Maintenance',
+                        color: 0xff0000,
+                        description: 'Hari ini akan ada maintenance silahkan keluar voice channel agar exp mu tersave'
+                    });
+            
+                    client.channels.cache.get('1204593050396008468').send({ embeds: [embed] });
+                }
+            });
         });
 
-        client.channels.cache.get('1204593050396008468').send({embeds: [embed]});
     }
 }
