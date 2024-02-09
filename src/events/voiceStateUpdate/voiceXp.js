@@ -63,8 +63,8 @@ module.exports = async (oldState, newState, client) => {
             // if(!level)
             else {
                 const newLevel = new Level({
-                    userId: message.member.id,
-                    guildId: message.guild.id,
+                    userId: oldState.member.id,
+                    guildId: oldState.guild.id,
                     xp: xpToGive
                 })
 
