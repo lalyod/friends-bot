@@ -1,63 +1,62 @@
-const { SlashCommandBuilder, StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js')
-const axios = require('axios')
+const {
+  SlashCommandBuilder,
+  StringSelectMenuOptionBuilder,
+  StringSelectMenuBuilder,
+  ActionRowBuilder,
+} = require('discord.js')
+const { useAnisaki } = require('../utils/api')
+
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('anime')
-        .setDescription('Menampilkan jadwal anime yang tayang pada hari tertentu')
-        .addStringOption(option =>
-            option.setName('day')
-                .setDescription('masukan nama hari')
-                .setRequired(true)
-        )
-    ,
+  data: new SlashCommandBuilder()
+    .setName('anime')
+    .setDescription('Menampilkan jadwal anime yang tayang pada hari tertentu')
+    .addStringOption((option) =>
+      option.setName('day').setDescription('masukan nama hari')
+    ),
+  /**
+   * @param {import('discord.js').InteractionResponse} interaction
+   */
+  run: async ({ interaction }) => {
+    try {
+      const { data: animes, error } = await useAnisaki()
 
-    /**
-     * 
-     * @param {import('discord.js').InteractionResponse} interaction 
-     */
-    run: async ({ interaction }) => {
-        const dayFormat = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+      await interaction.deferReply()
 
-        let index = null;
+      if (error) return await interaction.editReply('Terjadi kesalahan')
 
-        const data = await axios.get(process.env.ANISAKI_API_URI)
+      const fields = animes.map((anime) => {
+        const airingAt = new Date(anime.nextAiringEpisode.airingAt * 1000)
+        return {
+          name: anime.title.romaji + '. Ep ' + anime.nextAiringEpisode.episode,
+          value: `Tayang pada ${airingAt.getHours()}:${airingAt.getMinutes()}`,
+        }
+      })
 
+      const options = animes.map((anime) =>
+        new StringSelectMenuOptionBuilder()
+          .setLabel(anime.title.romaji)
+          .setValue(JSON.stringify([new Date().getDay(), anime.id.toString()]))
+      )
 
-        dayFormat.forEach((day, i) => {
-            if (interaction.options.get('day')?.value === dayFormat[i].toLowerCase()) index = i
-            else return
-        })
+      const select = new StringSelectMenuBuilder()
+        .setCustomId('detail-anime')
+        .setPlaceholder('Pilih anime')
+        .addOptions(...options)
 
-        if (index === null) return
+      const row = new ActionRowBuilder().addComponents(select)
 
-        const animes = data.data?.schedule[index].map(anime => {
-            return {
-                id: anime.id,
-                title: anime.title.romaji,
-                airingAt: anime.nextAiringEpisode.airingAt,
-                episode: anime.nextAiringEpisode.episode
-            }
-        })
-
-        const select = new StringSelectMenuBuilder({
-            custom_id: 'anime',
-            options: animes.map(anime => {
-                return {
-                    label: anime.title.length >= 50 ? anime.title.slice(0, 50) + '...' : anime.title,
-                    value: JSON.stringify({
-                        id: anime.id,
-                        schedule_index: index,
-                        day: dayFormat[index]
-                    })
-                }
-            })
-        })
-
-
-        const row = new ActionRowBuilder({ components: [select] })
-
-        interaction.reply({ components: [row] })
-
-      delete dayFormat, animes, select, row, interaction, index;
+      await interaction.editReply({
+        embeds: [
+          {
+            title: 'Anime yang tanyang hari ini',
+            fields,
+          },
+        ],
+        components: [row],
+      })
+    } catch (err) {
+      console.log(err)
+      await interaction.editReply('Terjadi kesalahan')
     }
+  },
 }
