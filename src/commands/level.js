@@ -4,9 +4,9 @@ const Level = require('../models/Level')
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('level')
-    .setDescription('Menampilkan level')
-    .addStringOption((option) =>
-      option.setName('target-user').setDescription('Mention member')
+    .setDescription('Menampilkan level anda/orang lain')
+    .addMentionableOption((option) =>
+      option.setName('user').setDescription('Orang yang ingin dilihat levelnya')
     ),
   /**
    * @param {InteractionResponse} interaction
@@ -17,30 +17,21 @@ module.exports = {
       return
     }
 
+    await interaction.deferReply()
+
     try {
-      await interaction.deferReply()
+      const options = interaction.options
 
-      const mentionUserId = interaction.options
-        .get('target-user')
-        ?.value.replace('@', '')
-        .replace('<', '')
-        .replace('>', '')
-      const targetUserId = mentionUserId || interaction.member.id
+      const user = options.get('user')?.user ?? interaction.member.user
 
-      const [fetchRank, fetchLevel, targetUserObj] = await Promise.all([
-        Level.find({ guildId: interaction.guild.id }).sort({ level: -1 }),
-        Level.findOne({
-          userId: targetUserId,
-          guildId: interaction.guild.id,
-        }),
-        interaction.guild.members.fetch(targetUserId),
-      ])
-      const rank = fetchRank.findIndex((rank) => rank.userId === targetUserId)
+      const level = await Level.findOne({
+        userId: user.id,
+      })
 
-      if (!fetchLevel) {
+      if (!level) {
         await interaction.editReply(
-          mentionUserId
-            ? `${targetUserObj.user.tag} Belum memiliki level sama sekali`
+          options.get('user')
+            ? `${user.tag} Belum memiliki level sama sekali`
             : 'Kamu belum memiliki level '
         )
         return
@@ -49,18 +40,14 @@ module.exports = {
       await interaction.editReply({
         embeds: [
           {
-            title: 'Info  ' + targetUserObj.displayName,
-            thumbnail: { url: targetUserObj.user.displayAvatarURL() },
-            fields: [
-              { name: 'Rank', value: rank, inline: true },
-              { name: 'Level', value: fetchLevel.level, inline: true },
-              { name: 'XP', value: fetchLevel.xp },
-            ],
+            description: `Saat ini kamu Level ${level.level}. Saat init xp kamu ${level.xp}.\n Jangan lupa sering-sering chat dan voice untuk naik level`,
+            thumbnail: { url: user.displayAvatarURL() },
           },
         ],
       })
     } catch (err) {
-      await interaction.channel.send(
+      console.log(err)
+      await interaction.editReply(
         'Telah terjadi kesalahan, silahkan coba lagi'
       )
     }

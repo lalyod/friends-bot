@@ -1,15 +1,11 @@
-const {Schema, model}  = require('mongoose')
+const { Schema, model } = require('mongoose')
 
 const levelSchema = new Schema({
     userId: {
         type: String,
         required: true,
     },
-    guildId: {
-        type: String,
-        required: true
-    },
-    xp:{
+    xp: {
         type: Number,
         default: 0
     },
