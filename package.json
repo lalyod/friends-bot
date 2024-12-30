@@ -4,7 +4,8 @@
   "description": "",
   "main": "./src/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./src/build.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "undici": "^5.22.1"
   },
   "devDependencies": {
+    "archiver": "^7.0.1",
     "prettier": "^3.3.3"
   }
 }
