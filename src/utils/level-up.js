@@ -13,7 +13,6 @@ async function levelUp(userId, xp, client) {
     level.xp += xp
 
     if (level.xp > calculateLevelXp(level.level)) {
-      console.log
       level.xp = 0
       level.level += 1
 
