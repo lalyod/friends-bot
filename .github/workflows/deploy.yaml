@@ -13,12 +13,10 @@ jobs:
       - name: Checkout GitHub repo
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm install -g discloud  # Ensure Discloud is installed
-
-      - name: Verify Discloud installation
+      - name: Install Discloud CLI globally
         run: |
-          discloud --version  # This will ensure that discloud is installed correctly
+          npm install -g discloud
+          echo "$(npm root -g)/.bin" >> $GITHUB_PATH  # Add Discloud CLI to PATH
 
       - name: Authenticate with Discloud
         run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
