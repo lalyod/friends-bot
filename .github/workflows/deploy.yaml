@@ -19,11 +19,16 @@ jobs:
           echo "$(npm root -g)/.bin" >> $GITHUB_PATH  # Add Discloud CLI to PATH
 
       - name: Authenticate with Discloud
+        env:
+          PATH: ${{ env.PATH }}:$(npm root -g)/.bin
         run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
       - name: Zip the bot files
+        env:
+          PATH: ${{ env.PATH }}:$(npm root -g)/.bin
         run: discloud zip
 
       - name: Deploy bot to Discloud
+        env:
+          PATH: ${{ env.PATH }}:$(npm root -g)/.bin
         run: discloud app upload
-
