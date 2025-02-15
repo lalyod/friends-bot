@@ -16,17 +16,35 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18  # Adjust to your Node.js version
+          node-version: 18  # Adjust to match your project's Node.js version
 
-      - name: Install Discloud CLI globally
-        run: npm install -g discloud
+      # Debug: Show environment paths
+      - name: Show system paths
+        run: echo "Current PATH: $PATH"
 
+      # Install Discloud CLI Locally
+      - name: Install Discloud CLI
+        run: npm install discloud
+
+      # Debug: Check where Discloud is installed
+      - name: Debug npm global/local paths
+        run: |
+          echo "Global npm root: $(npm root -g)"
+          echo "Global npm bin: $(npm bin -g)"
+          echo "Local node_modules: $(pwd)/node_modules/.bin"
+          ls -la $(npm bin -g)
+          ls -la $(pwd)/node_modules/.bin
+
+      # Authenticate with Discloud
       - name: Authenticate with Discloud
-        run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
+        run: npx discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
+      # Zip the bot files
       - name: Zip the bot files
-        run: discloud zip
+        run: npx discloud zip
 
+      # Deploy bot to Discloud
       - name: Deploy bot to Discloud
-        run: discloud app upload
+        run: npx discloud app upload
+
 
