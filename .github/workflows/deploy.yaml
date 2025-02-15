@@ -18,6 +18,10 @@ jobs:
           npm install
           npm install discloud --save-dev  # Ensure Discloud is installed
 
+      - name: Verify Discloud installation
+        run: |
+          npx discloud --version  # This will ensure that discloud is installed correctly
+
       - name: Authenticate with Discloud
         run: npx discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
