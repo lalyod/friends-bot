@@ -10,17 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout github repo
+      - name: Checkout GitHub repo
         uses: actions/checkout@v3
 
-      - name: install Discloud CLI
-        run: npm install discloud
-      
-      - name: Auth discloud cli
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install discloud --save-dev  # Ensure Discloud is installed
+
+      - name: Authenticate with Discloud
         run: npx discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
       - name: Zip the bot files
-        run: discloud zip
+        run: npx discloud zip
 
-      - name: Deploy bot to discloud
-        run: discloud app upload
+      - name: Deploy bot to Discloud
+        run: npx discloud app upload
+
