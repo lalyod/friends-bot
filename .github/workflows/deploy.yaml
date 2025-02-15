@@ -14,18 +14,18 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: npm install discloud --save-dev  # Ensure Discloud is installed
+        run: npm install -g discloud  # Ensure Discloud is installed
 
       - name: Verify Discloud installation
         run: |
-          npx discloud --version  # This will ensure that discloud is installed correctly
+          discloud --version  # This will ensure that discloud is installed correctly
 
       - name: Authenticate with Discloud
-        run: npx discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
+        run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
       - name: Zip the bot files
-        run: npx discloud zip
+        run: discloud zip
 
       - name: Deploy bot to Discloud
-        run: npx discloud app upload
+        run: discloud app upload
 
