@@ -20,7 +20,7 @@ const client = new Client({
 async function connect() {
   try {
     await mongoose.connect(process.env.MONGODB_URI)
-    console.log('Connected to database')
+
     new CommandHandler({
       client,
       commandsPath: path.join(__dirname, 'commands'),
