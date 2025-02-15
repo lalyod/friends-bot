@@ -46,10 +46,6 @@ module.exports = async (interaction) => {
         ],
         components: [],
       })
-
-      console.log(
-        `[${new Date().toString()}] handling interaction 'detail-anime' completed successfully`
-      )
     } catch (err) {
       console.log(err)
       await interaction.message.edit({ content: 'Terjadi kesalahan' })
