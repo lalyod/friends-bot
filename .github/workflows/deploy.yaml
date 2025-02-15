@@ -17,7 +17,7 @@ jobs:
         run: npm install discloud
       
       - name: Auth discloud cli
-        run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
+        run: npx discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
       - name: Zip the bot files
         run: discloud zip
