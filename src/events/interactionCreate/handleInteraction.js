@@ -1,5 +1,7 @@
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js')
-const { useAnisakiOne } = require('../../utils/api')
+const { useAnisakiOne, useAnisaki } = require('../../utils/api')
+const { StringSelectMenuBuilder } = require('discord.js')
+const { StringSelectMenuOptionBuilder } = require('discord.js')
 
 /**
  *
@@ -7,6 +9,10 @@ const { useAnisakiOne } = require('../../utils/api')
  */
 module.exports = async (interaction) => {
   if (interaction.customId === 'detail-anime') {
+    console.log(
+      `[${new Date().toString()}] handling interaction 'detail-anime' started`
+    )
+
     try {
       const { data: anime } = await useAnisakiOne(
         ...JSON.parse(interaction.values[0])
@@ -21,13 +27,13 @@ module.exports = async (interaction) => {
               { name: anime?.title.english, value: '' },
               {
                 name: 'Episode',
-                value: anime.nextAiringEpisode.episode.toString(),
+                value: anime?.nextAiringEpisode.episode.toString(),
                 inline: true,
               },
               {
                 name: 'Jam Tayang',
                 value: new Date(
-                  anime.nextAiringEpisode.airingAt * 1000
+                  anime?.nextAiringEpisode.airingAt * 1000
                 ).toLocaleString('id-ID', {
                   hour: 'numeric',
                   minute: 'numeric',
@@ -38,89 +44,103 @@ module.exports = async (interaction) => {
             image: { url: anime?.coverImage.large },
           },
         ],
+        components: [],
       })
+
+      console.log(
+        `[${new Date().toString()}] handling interaction 'detail-anime' completed successfully`
+      )
     } catch (err) {
       console.log(err)
       await interaction.message.edit({ content: 'Terjadi kesalahan' })
     }
   }
-  if (interaction.customId == 'dandadan-prev') {
-    const message = await interaction.message.fetch()
 
-    const embeds = message?.embeds
-    if (embeds.length > 0) {
-      const panel = parseInt(embeds[0].fields[0]?.value)
-      const chapter = parseInt(embeds[0].fields[1]?.value)
+  if (interaction.customId == 'anime_schedule') {
+    const values = interaction.values
 
-      const next = new ButtonBuilder()
-        .setCustomId('dandadan-next')
-        .setLabel('Selanjutnya')
-        .setStyle(ButtonStyle.Primary)
-      const prev = new ButtonBuilder()
-        .setCustomId('dandadan-prev')
-        .setLabel('Sebelumnya')
-        .setStyle(ButtonStyle.Primary)
-
-      const row = new ActionRowBuilder().addComponents(prev, next)
-
-      await interaction.message.edit({
-        embeds: [
-          {
-            ...embeds[0],
-            fields: [
-              { name: 'Panel', value: panel - 1, inline: true },
-              { name: 'Chapter', value: chapter, inline: true },
-            ],
-            image: {
-              url: `https://cdn.readkakegurui.com/file/cdnpog/dandadan/chapter-${chapter}/${panel - 1}.webp`,
-            },
-          },
-        ],
-        components: [row],
-      })
+    if (values === undefined || values.length == 0) {
+      interaction.reply(`<@793991682310799360>, tulung error mas.`)
+      return
     }
+
+    const dayIndex = parseInt(values[0])
+    const { data } = await useAnisaki(dayIndex)
+
+    const embed = {
+      title: `> Anime yang tayang hari ${new Date(
+        2000,
+        0,
+        dayIndex
+      ).toLocaleString('id-ID', { weekday: 'long' })}`,
+      fields: data?.map((anime) => ({
+        name: `**${anime?.title?.romaji}**, Ep ${anime?.nextAiringEpisode?.episode}`,
+        value: new Date(
+          anime?.nextAiringEpisode?.airingAt * 1000
+        ).toLocaleString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+        }),
+      })),
+    }
+
+    const options = data?.map((anime) =>
+      new StringSelectMenuOptionBuilder()
+        .setLabel(
+          `${anime.title.romaji?.substr(0, 94)}${
+            anime?.title?.length >= 100 ? '...' : ''
+          }`
+        )
+        .setValue(JSON.stringify([dayIndex, anime.id.toString()]))
+    )
+
+    const select = new StringSelectMenuBuilder()
+      .setCustomId('detail-anime')
+      .setPlaceholder('Lihat anime')
+      .addOptions(...options)
+
+    const row = new ActionRowBuilder().addComponents(select)
+
+    interaction.channel.send({ embeds: [embed], components: [row] })
+    interaction.message.delete()
   }
-  if (interaction.customId == 'dandadan-next') {
-    const message = await interaction.message.fetch()
 
-    const embeds = message?.embeds
-    if (embeds.length > 0) {
-      const panel = parseInt(embeds[0].fields[0]?.value)
-      const chapter = parseInt(embeds[0].fields[1]?.value)
+  if (interaction.customId === 'hoyo-redeem-select-game') {
+    const values = interaction.values
 
-      const next = new ButtonBuilder()
-        .setCustomId('dandadan-next')
-        .setLabel('Selanjutnya')
-        .setStyle(ButtonStyle.Primary)
-      const prev = new ButtonBuilder()
-        .setCustomId('dandadan-prev')
-        .setLabel('Sebelumnya')
-        .setStyle(ButtonStyle.Primary)
+    if (values === undefined || values.length == 0) {
+      interaction.send(`<@793991682310799360>, tulung error mas.`)
+      return
+    }
 
-      const row = new ActionRowBuilder().addComponents(prev, next)
+    await interaction.deferUpdate()
 
-      await interaction.message.edit({
-        embeds: [
-          {
-            ...embeds[0],
-            fields: [
-              {
-                name: 'Panel',
-                value: (panel >= 19 ? 0 : panel) + 1,
-                inline: true,
-              },
-              {
-                name: 'Chapter',
-                value: panel >= 19 ? chapter + 1 : chapter,
-                inline: true,
-              },
-            ],
-            image: {
-              url: `https://cdn.readkakegurui.com/file/cdnpog/dandadan/chapter-${panel >= 19 ? chapter + 1 : chapter}/${(panel >= 19 ? 0 : panel) + 1}.webp`,
-            },
-          },
-        ],
-        components: [row],
+    try {
+      const { codes } = await fetch(
+        `https://hoyo-codes.seria.moe/codes?game=${values[0]}`
+      ).then((res) => res.json())
+
+      const embed = {
+        title: 'Redeem Code',
+        description: codes
+          .map((code) => `**${code.code}** \n ${code.rewards ?? '-'}`)
+          .reverse()
+          .join('\n\n'),
+      }
+
+      await interaction.message.edit({ embeds: [embed] })
+
+      setTimeout(async () => {
+        await interaction.message.edit({ components: [] })
+      }, 1000)
+    } catch (err) {
+      console.log('Redeem code interaction handler error: ', err)
+      await interaction.editReply({
+        content: 'Terjadi kesalahan saat mengambil kode redeem. coba lagi',
+        ephemeral: true,
       })
     }
   }
