@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout github repo
+        uses: actions/checkout@v3
+
+      - name: install Discloud CLI
+        run: npm install -g discloud
+      
+      - name: Auth discloud cli
+        run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
+
+      - name: Zip the bot files
+        run: discloud zip
+
+      - name: Deploy bot to discloud
+        run: discloud app upload
