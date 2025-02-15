@@ -10,25 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout GitHub repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Adjust to your Node.js version
+
       - name: Install Discloud CLI globally
-        run: |
-          npm install -g discloud
-          echo "$(npm root -g)/.bin" >> $GITHUB_PATH  # Add Discloud CLI to PATH
+        run: npm install -g discloud
 
       - name: Authenticate with Discloud
-        env:
-          PATH: ${{ env.PATH }}:$(npm root -g)/.bin
         run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
       - name: Zip the bot files
-        env:
-          PATH: ${{ env.PATH }}:$(npm root -g)/.bin
         run: discloud zip
 
       - name: Deploy bot to Discloud
-        env:
-          PATH: ${{ env.PATH }}:$(npm root -g)/.bin
         run: discloud app upload
+
