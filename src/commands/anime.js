@@ -15,6 +15,7 @@ const choices = Array.from({ length: 7 }, (_, i) => {
 })
 
 module.exports = {
+  deleted: true,
   data: new SlashCommandBuilder()
     .setName('anime')
     .setDescription('Menampilkan jadwal anime yang tayang pada hari tertentu')
@@ -34,6 +35,10 @@ module.exports = {
         !option ? new Date().getDay() : parseInt(option)
       )
 
+      console.log(
+        `${interaction.member.id} use command /anime with option ${option}`
+      )
+
       await interaction.deferReply()
 
       if (error) return await interaction.editReply('Terjadi kesalahan')
@@ -41,12 +46,16 @@ module.exports = {
       const fields = animes?.map((anime) => {
         const airingAt = new Date(anime.nextAiringEpisode.airingAt * 1000)
         return {
-          name: '> ' + anime.title.romaji + ' Ep ' + anime.nextAiringEpisode.episode,
+          name:
+            '> ' +
+            anime.title.romaji +
+            ' Ep ' +
+            anime.nextAiringEpisode.episode,
           value: `Tayang pada ${airingAt.getHours()}:${airingAt.getMinutes()}`,
         }
       })
 
-      const options = animes.map((anime) =>
+      const options = animes?.map((anime) =>
         new StringSelectMenuOptionBuilder()
           .setLabel(anime.title.romaji)
           .setValue(JSON.stringify([new Date().getDay(), anime.id.toString()]))
