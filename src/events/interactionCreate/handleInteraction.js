@@ -106,6 +106,7 @@ module.exports = async (interaction) => {
 
   if (interaction.customId === 'hoyo-redeem-select-game') {
     const values = interaction.values
+    let shortcut = ''
 
     if (values === undefined || values.length == 0) {
       interaction.send(`<@793991682310799360>, tulung error mas.`)
@@ -113,6 +114,14 @@ module.exports = async (interaction) => {
     }
 
     await interaction.deferUpdate()
+
+    if (values[0] == 'honkai3rd')
+      shortcut = 'https://honkaiimpact3.hoyoverse.com'
+    else if (values[0] == 'genshin')
+      shortcut = 'https://genshin.hoyoverse.com/gift'
+    else if (values[0] == 'hkrpg') shortcut = 'https://hsr.hoyoverse.com/gift'
+    else if (values[0] == 'nap') shortcut = 'https://zzz.hoyoverse.com/gift'
+    else shortcut = 'https://hoyoverse.com'
 
     try {
       const { codes } = await fetch(
@@ -122,7 +131,10 @@ module.exports = async (interaction) => {
       const embed = {
         title: 'Redeem Code',
         description: codes
-          .map((code) => `**${code.code}** \n ${code.rewards ?? '-'}`)
+          .map(
+            (code) =>
+              `**[${code.code}](${shortcut + '?code=' + code.code})** \n ${code.rewards.trim().length > 0 ? code.rewards : '-'}`
+          )
           .reverse()
           .join('\n\n'),
       }
