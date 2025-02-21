@@ -18,18 +18,22 @@ jobs:
         with:
           node-version: 18  # Adjust to match your project's Node.js version
 
-      # Install Discloud CLI Locally
+      # Install Discloud CLI Globally
       - name: Install Discloud CLI
         run: npm install -g discloud
 
+      # Verify Discloud Installation
+      - name: Verify Discloud CLI
+        run: discloud --version
+
       # Authenticate with Discloud
       - name: Authenticate with Discloud
-        run: npx discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
+        run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
 
       # Zip the bot files
       - name: Zip the bot files
-        run: npx discloud zip
+        run: discloud zip
 
       # Deploy bot to Discloud
       - name: Deploy bot to Discloud
-        run: npx discloud app upload
+        run: discloud app upload
