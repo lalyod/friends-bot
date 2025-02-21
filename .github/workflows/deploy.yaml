@@ -18,22 +18,9 @@ jobs:
         with:
           node-version: 18  # Adjust to match your project's Node.js version
 
-      # Debug: Show environment paths
-      - name: Show system paths
-        run: echo "Current PATH: $PATH"
-
       # Install Discloud CLI Locally
       - name: Install Discloud CLI
-        run: npm install discloud
-
-      # Debug: Check where Discloud is installed
-      - name: Debug npm global/local paths
-        run: |
-          echo "Global npm root: $(npm root -g)"
-          echo "Global npm bin: $(npm bin -g)"
-          echo "Local node_modules: $(pwd)/node_modules/.bin"
-          ls -la $(npm bin -g)
-          ls -la $(pwd)/node_modules/.bin
+        run: npm install -g discloud
 
       # Authenticate with Discloud
       - name: Authenticate with Discloud
@@ -46,5 +33,3 @@ jobs:
       # Deploy bot to Discloud
       - name: Deploy bot to Discloud
         run: npx discloud app upload
-
-
