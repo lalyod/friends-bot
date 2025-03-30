@@ -1,5 +1,5 @@
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js')
-const { useAnisakiOne, useAnisaki } = require('../../utils/api')
+const { ActionRowBuilder } = require('discord.js')
+const { useAnisakiOne, useAnisaki } = require('../../utils/api.js')
 const { StringSelectMenuBuilder } = require('discord.js')
 const { StringSelectMenuOptionBuilder } = require('discord.js')
 
