@@ -16,14 +16,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18  # Adjust to match your project's Node.js version
+          node-version: 18 
 
       # Install Discloud CLI Globally
       - name: Install Discloud CLI
         run: npm install -g discloud
 
+      - name: Add npm global bin to PATH
+        run: |
+          echo "NPM_CONFIG_PREFIX=$(npm config get prefix)" >> $GITHUB_ENV
+          echo "$NPM_CONFIG_PREFIX/bin" >> $GITHUB_PATH
+
       # Verify Discloud Installation
-      - name: Verify Discloud CLI
+      - name: Verify Discloud CLjkjI
         run: discloud --version
 
       # Authenticate with Discloud
