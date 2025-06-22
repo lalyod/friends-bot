@@ -13,11 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' 
-
       - name: Zip all then needed file
         run: |
           zip -r bot.zip src .env config.json discloud.config package.json pnpm-lock.yaml
