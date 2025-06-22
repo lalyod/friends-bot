@@ -4,8 +4,5 @@
   "tabWidth": 4,
   "semi": false,
   "singleQuote": true,
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true,
-  "importOrderCaseInsensitive": true
 }
 

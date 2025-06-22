@@ -8,10 +8,12 @@ const levelUp = require('../../utils/level-up.js')
 module.exports = async (message, client) => {
     if (!message.inGuild()) return
     if (message.author.bot) return
-    if(message.channelId != "753081137248600124") return
+    if (message.channelId != '753081137248600124') return
 
+    console.log('EvenTriggered: messageCreate')
     try {
         if (message.attachments.size > 0) {
+            console.log('Message has attachment')
             // give user 20 xp per image
             await levelUp(
                 message.author.id,
@@ -19,8 +21,10 @@ module.exports = async (message, client) => {
                 client
             )
 
-            if (message.attachments.size >= 4){
-                await message.reply(`Puncak komedi <@${message.author.id}>, kamu mengirim lebih dari 4 memes sekaligus. Sekarang pergi sentuh rumput. Nolep!`)
+            if (message.attachments.size >= 4) {
+                await message.reply(
+                    `Puncak komedi <@${message.author.id}>, kamu mengirim lebih dari 4 memes sekaligus. Sekarang pergi sentuh rumput. Nolep!`
+                )
             }
 
             await message.react('✅')
