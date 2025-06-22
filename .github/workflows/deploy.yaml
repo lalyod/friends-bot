@@ -19,7 +19,7 @@ jobs:
       
       - name: Upload zipped file to host
         run: |
-          curl -X PUT https://api.discloud.com/v2/app/${{ secrets.DISCLOUD_APP_ID }}/commit \
+          curl -X PUT https://api.discloud.app/v2/app/${{ secrets.DISCLOUD_APP_ID }}/commit \
             -H "api-token: ${{ secrets.DISCLOUD_API_TOKEN }}" \
             -F "file=@bot.zip" \
             -H "Content-Type: multipart/form-data"
