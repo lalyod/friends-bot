@@ -11,34 +11,20 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 
+          node-version: '20' 
 
-      # Install Discloud CLI Globally
-      - name: Install Discloud CLI
-        run: npm install -g discloud
-
-      - name: Add npm global bin to PATH
+      - name: Zip all then needed file
         run: |
-          echo "NPM_CONFIG_PREFIX=$(npm config get prefix)" >> $GITHUB_ENV
-          echo "$NPM_CONFIG_PREFIX/bin" >> $GITHUB_PATH
-
-      # Verify Discloud Installation
-      - name: Verify Discloud CLjkjI
-        run: discloud --version
-
-      # Authenticate with Discloud
-      - name: Authenticate with Discloud
-        run: discloud login --token ${{ secrets.DISCLOUD_TOKEN }}
-
-      # Zip the bot files
-      - name: Zip the bot files
-        run: discloud zip
-
-      # Deploy bot to Discloud
-      - name: Deploy bot to Discloud
-        run: discloud app upload
+          zip -r bot.zip src .env config.json discloud.config package.json pnpm-lock.yaml
+      
+      - name: Upload zipped file to host
+        run: |
+          curl -X PUT https://api.discloud.com/v2/app/${{ DISCLOUD_APP_ID }}/commit \
+            -H "api-token: ${{ DISCLOUD_API_TOKEN }}" \
+            -F "file=@bot.zip" \
+            -H "Content-Type: multipart/form-data"
