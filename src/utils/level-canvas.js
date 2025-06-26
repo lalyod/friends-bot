@@ -1,5 +1,10 @@
 const { AttachmentBuilder, InteractionResponse } = require('discord.js')
-const { createCanvas, GlobalFonts, Image } = require('@napi-rs/canvas')
+const {
+    createCanvas,
+    GlobalFonts,
+    Image,
+    loadImage,
+} = require('@napi-rs/canvas')
 const { request } = require('undici')
 const calculateLevelXp = require('./calculateLevelXp')
 
@@ -31,7 +36,7 @@ module.exports = async (level, xp, member) => {
     ctx.fillRect(
         0,
         canvas.height - 5,
-        canvas.width * xp / calculateLevelXp(level),
+        (canvas.width * xp) / calculateLevelXp(level),
         5
     )
 
@@ -53,7 +58,7 @@ module.exports = async (level, xp, member) => {
 
     ctx.globalAlpha = 1
     ctx.beginPath()
-    ctx.strokeStyle = "#18191C"
+    ctx.strokeStyle = '#18191C'
     ctx.arc(120, canvas.height / 3 - 10, 80, 9, (Math.PI + 0.2) * 2, false)
     ctx.lineWidth = 30
     ctx.stroke()
@@ -64,11 +69,9 @@ module.exports = async (level, xp, member) => {
     ctx.closePath()
     ctx.clip()
 
-    const { body } = await request(
+    const avatar = await loadImage(
         member.displayAvatarURL({ extension: 'jpg' })
     )
-    const avatar = new Image()
-    avatar.src = Buffer.from(await body.arrayBuffer())
     ctx.drawImage(avatar, 40, canvas.height / 3 - (160 / 2 + 10), 160, 160)
 
     const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), {
