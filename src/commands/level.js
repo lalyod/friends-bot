@@ -1,55 +1,70 @@
-const { InteractionResponse, SlashCommandBuilder } = require('discord.js')
+const {
+    InteractionResponse,
+    SlashCommandBuilder,
+    AttachmentBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+} = require('discord.js')
 const Level = require('../models/Level')
+const levelCanvas = require('../utils/level-canvas.js')
+const logger = require('../utils/logger')
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('level')
-    .setDescription('Menampilkan level anda/orang lain')
-    .addMentionableOption((option) =>
-      option.setName('user').setDescription('Orang yang ingin dilihat levelnya')
-    ),
-  /**
-   * @param {InteractionResponse} interaction
-   */
-  run: async ({ interaction }) => {
-    if (!interaction.inGuild()) {
-      interaction.reply('Command hanya bisa di jalankan di server')
-      return
-    }
+    data: new SlashCommandBuilder()
+        .setName('level')
+        .setDescription('Menampilkan level anda/orang lain')
+        .addMentionableOption((option) =>
+            option
+                .setName('user')
+                .setDescription('Orang yang ingin dilihat levelnya')
+        ),
+    /**
+     * @param {InteractionResponse} interaction
+     */
+    run: async ({ interaction }) => {
+        try {
+            await interaction.deferReply()
 
-    await interaction.deferReply()
+            const member = interaction.member
+            if (!member) throw 'levelCommand: member not found.'
 
-    try {
-      const options = interaction.options
+            const profile = await Level.findOne({ userId: member.id })
+            if (!profile) throw 'levelCommand: level not found'
 
-      const user = options.get('user')?.user ?? interaction.member.user
+            const attachment = await levelCanvas(
+                profile.level,
+                profile.xp,
+                member
+            )
 
-      const level = await Level.findOne({
-        userId: user.id,
-      })
+            // TODO: make button handler
+            const actions = new ActionRowBuilder().addComponents([
+                new ButtonBuilder()
+                    .setLabel('✨ Edit Profile')
+                    .setCustomId('edit-profile')
+                    .setStyle(ButtonStyle.Secondary)
+            ])
 
-      if (!level) {
-        await interaction.editReply(
-          options.get('user')
-            ? `${user.tag} Belum memiliki level sama sekali`
-            : 'Kamu belum memiliki level '
-        )
-        return
-      }
-
-      await interaction.editReply({
-        embeds: [
-          {
-            description: `Saat ini kamu Level ${level.level}. Saat init xp kamu ${level.xp}.\n Jangan lupa sering-sering chat dan voice untuk naik level`,
-            thumbnail: { url: user.displayAvatarURL() },
-          },
-        ],
-      })
-    } catch (err) {
-      console.log(err)
-      await interaction.editReply(
-        'Telah terjadi kesalahan, silahkan coba lagi'
-      )
-    }
-  },
+            await interaction.editReply({
+                files: [attachment],
+                components: [actions],
+            })
+            logger.info(`level card send for user ${member.id}`)
+        } catch (err) {
+            logger.error(
+                { err, userId: interaction.user?.id },
+                'failed to generate level card'
+            )
+            if (interaction.deferred || interaction.replied) {
+                await interaction.editReply({
+                    content: 'gagal membuat kartu level.',
+                })
+            } else {
+                await interaction.reply({
+                    content: 'gagal membuat kartu level.',
+                })
+            }
+        }
+    },
 }
