@@ -9,10 +9,6 @@ const { StringSelectMenuOptionBuilder } = require('discord.js')
  */
 module.exports = async (interaction) => {
   if (interaction.customId === 'detail-anime') {
-    console.log(
-      `[${new Date().toString()}] handling interaction 'detail-anime' started`
-    )
-
     try {
       const { data: anime } = await useAnisakiOne(
         ...JSON.parse(interaction.values[0])

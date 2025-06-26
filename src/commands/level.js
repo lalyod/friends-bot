@@ -35,6 +35,7 @@ module.exports = {
             const attachment = await levelCanvas(
                 profile.level,
                 profile.xp,
+                profile.banner_color,
                 member
             )
 

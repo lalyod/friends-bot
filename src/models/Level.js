@@ -12,6 +12,10 @@ const levelSchema = new Schema({
     level: {
         type: Number,
         default: 0,
+    },
+    banner_color: {
+        type: String,
+        default: null
     }
 })
 

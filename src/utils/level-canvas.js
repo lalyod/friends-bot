@@ -1,20 +1,15 @@
 const { AttachmentBuilder, InteractionResponse } = require('discord.js')
-const {
-    createCanvas,
-    GlobalFonts,
-    Image,
-    loadImage,
-} = require('@napi-rs/canvas')
-const { request } = require('undici')
+const { createCanvas, GlobalFonts, loadImage } = require('@napi-rs/canvas')
 const calculateLevelXp = require('./calculateLevelXp')
 
 /**
  * @param {number} level
  * @param {number} xp
+ * @param {string|undefined} bannerColor
  * @param {import('discord.js').GuildMember} member
  * @returns {Promise<import('discord.js').AttachmentBuilder>}
  */
-module.exports = async (level, xp, member) => {
+module.exports = async (level, xp, bannerColor, member) => {
     GlobalFonts.registerFromPath(
         './src/assets/fonts/Poppins-SemiBold.ttf',
         'Poppins'
@@ -29,7 +24,7 @@ module.exports = async (level, xp, member) => {
     grd.addColorStop(0, '#7F86EC')
     grd.addColorStop(1, '#3A44DE')
 
-    ctx.fillStyle = grd
+    ctx.fillStyle = bannerColor ?? grd
     ctx.fillRect(0, 0, canvas.width, canvas.height / 3)
 
     ctx.fillStyle = 'green'
