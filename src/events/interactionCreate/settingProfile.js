@@ -19,7 +19,15 @@ const levelCanvas = require('../../utils/level-canvas')
  * @param {import('discord.js').InteractionResponse} interaction
  */
 module.exports = async (interaction) => {
-    if (interaction.customId == 'edit-profile') {
+    if (interaction.customId?.startsWith('editProfile')) {
+        const levelCardOwner = interaction.customId.split('-')[1]
+        if (levelCardOwner != interaction.member.id){
+            await interaction.reply(
+                'Anda tidak bisa mengatur profil orang lain.'
+            )
+            return
+        }
+
         try {
             await interaction.deferReply()
 

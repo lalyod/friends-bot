@@ -43,13 +43,13 @@ module.exports = async (level, xp, bannerColor, member) => {
     ctx.fillStyle = '#ffffff'
     ctx.fillText(member.user.username, 40, 280)
 
-    ctx.font = '100 50px Poppins'
+    ctx.font = '100 30px Poppins'
     ctx.fillStyle = '#ffffff'
-    ctx.fillText(`LEVEL ${level}`, 40, canvas.height - 50)
+    ctx.fillText(`LEVEL ${level}`, 40, canvas.height - 55)
 
-    ctx.font = '100 10px Poppins'
+    ctx.font = '100 14px Poppins'
     ctx.fillStyle = '#ffffff'
-    ctx.fillText(`${xp} XP`, 44, canvas.height - 30)
+    ctx.fillText(`${xp} XP`, 40, canvas.height - 30)
 
     ctx.globalAlpha = 1
     ctx.beginPath()

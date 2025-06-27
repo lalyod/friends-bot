@@ -24,6 +24,7 @@ module.exports = {
      */
     run: async ({ interaction }) => {
         try {
+            logger.info("handling '/level' commands")
             await interaction.deferReply()
 
             const member = interaction.member
@@ -39,12 +40,11 @@ module.exports = {
                 member
             )
 
-            // TODO: make button handler
             const actions = new ActionRowBuilder().addComponents([
                 new ButtonBuilder()
                     .setLabel('✨ Edit Profile')
-                    .setCustomId('edit-profile')
-                    .setStyle(ButtonStyle.Secondary)
+                    .setCustomId(`editProfile-${member.id}`)
+                    .setStyle(ButtonStyle.Secondary),
             ])
 
             await interaction.editReply({
