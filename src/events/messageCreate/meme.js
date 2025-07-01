@@ -1,5 +1,6 @@
 const { Client, Message } = require('discord.js')
 const levelUp = require('../../utils/level-up.js')
+const logger = require('../../utils/logger.js')
 
 /**
  * @param {Client} client
@@ -10,10 +11,10 @@ module.exports = async (message, client) => {
     if (message.author.bot) return
     if (message.channelId != '753081137248600124') return
 
-    console.log('EvenTriggered: messageCreate')
+    logger.info('EvenTriggered: messageCreate: ')
     try {
         if (message.attachments.size > 0) {
-            console.log('Message has attachment')
+            logger.info({ message }, 'message has attachment')
             // give user 20 xp per image
             await levelUp(
                 message.author.id,
@@ -30,6 +31,6 @@ module.exports = async (message, client) => {
             await message.react('✅')
         }
     } catch (err) {
-        console.log(err)
+        logger.err({ err }, 'failed give user xp')
     }
 }

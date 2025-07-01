@@ -34,8 +34,5 @@ module.exports = {
 
     interaction.reply({ embeds: [embed], components: [row] })
 
-    console.log(
-      `[${new Date().toString()}] ${interaction.member.id} use command /jadwal_anime `
-    )
   },
 }
