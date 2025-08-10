@@ -36,4 +36,4 @@ async function useAnisakiOne(index = new Date().getDay(), id = 1) {
     return { data: response, error }
 }
 
-module.exports = { useAnisaki, useAnisakiOne, useDanDaDan }
+module.exports = { useAnisaki, useAnisakiOne }
