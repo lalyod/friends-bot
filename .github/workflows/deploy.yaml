@@ -1,0 +1,25 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Zip all then needed file
+        run: |
+          zip -r bot.zip src .env config.json discloud.config package.json pnpm-lock.yaml
+      
+      - name: Upload zipped file to host
+        run: |
+          curl -X PUT https://api.discloud.app/v2/app/${{ secrets.DISCLOUD_APP_ID }}/commit \
+            -H "api-token: ${{ secrets.DISCLOUD_API_TOKEN }}" \
+            -F "file=@bot.zip" \
+            -H "Content-Type: multipart/form-data"
