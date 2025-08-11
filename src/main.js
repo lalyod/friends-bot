@@ -6,6 +6,7 @@ const { CommandHandler } = require('djs-commander')
 const path = require('path')
 const mongoose = require('mongoose')
 const logger = require('./utils/logger')
+const { bot } = require('./config/bot')
 
 const client = new Client({
     intents: [
@@ -31,7 +32,7 @@ async function connect() {
         })
 
         logger.info('starting discord bot')
-        client.login(process.env.TOKEN)
+        client.login(bot.token)
     } catch (error) {
         logger.error({ error }, 'failed to start bot.')
     }

@@ -1,5 +1,6 @@
 const axios = require('axios')
 const dotenv = require('dotenv')
+const { discloud } = require('../config/discloud')
 dotenv.config()
 
 const useAnisaki = async (index = new Date().getDay()) => {
@@ -36,4 +37,17 @@ async function useAnisakiOne(index = new Date().getDay(), id = 1) {
     return { data: response, error }
 }
 
-module.exports = { useAnisaki, useAnisakiOne }
+const useHostingStatus = async () => {
+    const { data } = await axios.get(
+        `https://api.discloud.app/v2/app/${discloud.app_id}/status`,
+        { headers: { 'api-token': discloud.token } }
+    )
+
+    if (data?.status === 'ok' && data?.apps) {
+        return data?.apps
+    } else {
+        throw 'Failed to fetch status'
+    }
+}
+
+module.exports = { useAnisaki, useAnisakiOne, useHostingStatus }
