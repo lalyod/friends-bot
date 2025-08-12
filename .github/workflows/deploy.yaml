@@ -17,7 +17,7 @@ jobs:
         run: |
           cat <<EOF > .env
           TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}
-          MONGO_URI=${{ secrets.MONGODB_URI }}
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
           ANISAKI_API_URL=${{ secrets.ANISAKI_API_URL }}
           DISCLOUD_API_TOKEN=${{ secrets.DISCLOUD_API_TOKEN }}
           DISCLOUD_APP_ID=${{ secrets.DISCLOUD_APP_ID }}
